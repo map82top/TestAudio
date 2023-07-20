@@ -1,0 +1,148 @@
+//fun permissionsGranted(context: Context): Boolean {
+//    val first = ActivityCompat.checkSelfPermission(
+//        context,
+//        Manifest.permission.RECORD_AUDIO
+//    )
+//    val second = ActivityCompat.checkSelfPermission(
+//        context,
+//        Manifest.permission.WRITE_EXTERNAL_STORAGE
+//    )
+//    return first == PackageManager.PERMISSION_GRANTED &&
+//            second == PackageManager.PERMISSION_GRANTED
+//}
+//
+//@Composable
+//fun Dictaphone(context: Context, activity: MainActivity, modifier: Modifier = Modifier, audioSavePath: String) {
+//
+//
+//    val REQUEST_SPEECH_RECOGNIZER: Int = 1001
+//    if (SpeechRecognizer.isRecognitionAvailable(context)) {
+//        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+//            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+//        }
+//        startActivityForResult(activity, intent, REQUEST_SPEECH_RECOGNIZER, null)
+//    } else {
+//
+//    }
+//
+//    /**
+//     * Load the languages into the spinner
+//     */
+//    translateService.getLanguages { response ->
+//        languages = response
+//        val adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, response.keys.toList())
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+//        language_choice.adapter = adapter
+//    }
+//
+//    /**
+//     * The translate button should only be enabled if there are more than 4 characters
+//     * in the original_text field.
+//     */
+//    original_text.afterTextChanged { text ->
+//        setButtonEnabled(translate_button, text.length >= 4)
+//    }
+//
+//    /**
+//     * The translate button will trigger the translation service
+//     */
+//    translate_button.setOnClickListener {
+//        val text = original_text.text.toString().trim()
+//        val language = language_choice.selectedItem
+//        translateService.translate(text, languages!![language]!!) { response ->
+//            translated_text.text = response
+//            setButtonEnabled(play_button, true)
+//        }
+//    }
+//
+//    var mediaPlayer: MediaPlayer? = null
+//    var mediaRecorder: MediaRecorder? = null
+//
+//    fun startRecordingHandler() {
+//        if (permissionsGranted(context)) {
+//
+//            if (mediaRecorder != null) {
+//                mediaRecorder!!.stop()
+//                mediaRecorder!!.release()
+//                Toast.makeText(context, "Recording stopped", Toast.LENGTH_SHORT).show()
+//            }
+//
+//            mediaRecorder = MediaRecorder()
+//            mediaRecorder!!.setAudioSource(MediaRecorder.AudioSource.MIC)
+//            mediaRecorder!!.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+//            mediaRecorder!!.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+//            mediaRecorder!!.setOutputFile(audioSavePath);
+//
+//            try {
+//                mediaRecorder!!.prepare()
+//                mediaRecorder!!.start()
+//                Toast.makeText(context, "Recording started", Toast.LENGTH_SHORT).show()
+//
+//            } catch (e: IOException) {
+//                e.printStackTrace();
+//            }
+//
+//        }else {
+//            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE), 1);
+//        }
+//    }
+//    fun stopRecordingHandler() {
+//        if (mediaRecorder != null) {
+//            mediaRecorder!!.stop()
+//            mediaRecorder!!.release()
+//            Toast.makeText(activity, "Recording stopped", Toast.LENGTH_SHORT).show()
+//        }
+//    }
+//
+//    fun startPlayingHandler() {
+//        mediaPlayer = MediaPlayer()
+//        try {
+//            mediaPlayer!!.setDataSource(audioSavePath)
+//            mediaPlayer!!.prepare()
+//            mediaPlayer!!.start()
+//            Toast.makeText(activity, "Start playing", Toast.LENGTH_SHORT).show()
+//        } catch (e: IOException) {
+//            e.printStackTrace()
+//        }
+//    }
+//
+//    fun stopPlayingHandler() {
+//        if (mediaPlayer != null) {
+//            mediaPlayer!!.stop();
+//            mediaPlayer!!.release();
+//            Toast.makeText(activity, "Stopped playing", Toast.LENGTH_SHORT).show();
+//        }
+//    }
+//
+//
+//}
+
+//@Preview(showBackground = true)
+//@Composable
+//fun DictaphonePreview() {
+//    TestAudioTheme {
+//        Dictaphone()
+//    }
+//}
+
+//            val audioFormat = AudioFormat.Builder()
+//                .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+//                .setSampleRate(48000)
+//                .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+//                .build()
+
+//            bufferSizeInBytes = AudioRecord.getMinBufferSize(sampleRateInHz, channelConfig, audioFormat) / 2
+
+fun getSpeechFragment(): ByteArray {
+        val fragmentLen = speechBuffer.position()
+        val speechFragment = ByteArray(fragmentLen)
+        speechBuffer.rewind()
+        speechBuffer.get(speechFragment, 0, fragmentLen)
+        val newAudioArray = ByteArray(remainLen)
+        speechBuffer.get(newAudioArray, 0, remainLen)
+        val newAudioBuffer = ByteBuffer.allocate(maxAudioBufferLen)
+        newAudioBuffer.put(newAudioArray)
+        speechBuffer = newAudioBuffer
+
+        return speechFragment
+    }
